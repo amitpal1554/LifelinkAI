@@ -113,8 +113,8 @@ LifelinkAI/
 ### Homepage
 ![Homepage](Screenshots/SS1.png)
 
-### Sign Up
-![Sign Up](Screenshots/SS2.png)
+### Log In
+![Log In](Screenshots/SS2.png)
 
 ### Predictors
 ![Predictors](Screenshots/SS3.png)
