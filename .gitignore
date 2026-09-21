@@ -33,3 +33,4 @@ Backend/dist/
 Medical Reports/
 
 # LCD.h5 tracked via Git LFS (.gitattributes)
+.report_preview/
