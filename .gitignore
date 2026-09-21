@@ -22,9 +22,6 @@ Backend/uploads/*
 Frontend/dist/
 Backend/dist/
 
-# Large ML weights (GitHub 100MB limit) — download separately if needed
-Backend/ML/Lung Cancer Prediction/LCD.h5
-ML/Lung Cancer Prediction/LCD.h5
 **/mongodb.tgz
 
 # IDE
@@ -34,3 +31,5 @@ ML/Lung Cancer Prediction/LCD.h5
 
 # Dataset images (too large for GitHub)
 Medical Reports/
+
+# LCD.h5 tracked via Git LFS (.gitattributes)
