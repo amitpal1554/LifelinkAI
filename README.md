@@ -1,137 +1,133 @@
-# PredictiX - Multi-Disease Prediction System
+# LifelinkAI — Multi-Disease Prediction System
 
-PredictiX is a comprehensive multi-disease prediction platform designed to predict heart disease, diabetes, breast cancer, and lung cancer. Built using the MERN stack and integrated with machine learning models, PredictiX offers an intuitive interface for users to input data and receive accurate health predictions, enhancing the diagnostic experience.
+LifelinkAI is a smart disease prediction and health monitoring platform. It predicts **heart disease**, **diabetes**, **breast cancer**, and **lung cancer** using machine learning models, with a modern MERN-stack web app for college demos and clinical-style workflows.
 
-## Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Machine Learning Models](#machine-learning-models)
-- [Usage](#usage)
-- [Frontend Design](#frontend-design)
-- [File Structure](#file-structure)
-- [Screenshots](#screenshots)
-- [Future Enhancements](#future-enhancements)
-- [License](#license)
+> Rebranded from PredictiX for this project showcase.
 
 ## Features
 
-- **User Authentication:** Secure sign-up and login functionality with protected routes using Context API.
-- **Predictive Models:**
-  - Heart disease prediction using Logistic Regression.
-  - Diabetes prediction using Support Vector Machine (SVM).
-  - Breast cancer prediction using Convolutional Neural Network (CNN).
-  - Lung cancer prediction using the InceptionResNet model.
-- **Image Upload for Cancer Predictions:** Users can upload medical images for breast and lung cancer detection.
-- **Prescription Upload:** Automatic form filling for heart disease and diabetes predictors using regex to scan user-uploaded prescriptions.
-- **Custom PDF Reports:** Generate a downloadable PDF report of prediction results.
-- **Real-time Notifications:** Integrated React Toasts for user-friendly notifications.
-- **Single Server Deployment:** Node.js Child Process is used to run all models, eliminating the need for a separate Flask server.
+- **User auth** — Sign up / login with protected routes (Context API + JWT cookies)
+- **Four predictors**
+  - Heart disease — Logistic Regression
+  - Diabetes — Support Vector Machine (SVM)
+  - Breast cancer — CNN (image upload)
+  - Lung cancer — InceptionResNet (`LCD.h5`, image upload)
+- **Prescription upload** — Auto-fills heart / diabetes forms via regex parsing
+- **PDF reports** — Downloadable prediction reports (`pdf-lib`)
+- **Single Node server** — ML models run via Node `child_process` (no separate Flask server)
+- **Canva-style landing UI** — Hero, capabilities, approach, and team About page
 
 ## Tech Stack
 
-- **Frontend:** React JS (with Vite), Context API, React Toasts, Figma for design.
-- **Backend:** Node.js, Express.js, Node.js Child Process for running machine learning models.
-- **Database:** MongoDB (for user data and predictions).
-- **Machine Learning Models:** Logistic Regression, SVM, CNN, InceptionResNet.
-- **Other Libraries:** 
-  - `pdf-lib` for generating custom PDF reports.
-  - `multer` for file uploads (images and prescriptions).
-  - `concurrently` for running client and server simultaneously.
+| Layer | Stack |
+| --- | --- |
+| Frontend | React (Vite), React Router, Context API, React Toastify |
+| Backend | Node.js, Express, Multer, JWT, MongoDB (Atlas) |
+| ML | Python + scikit-learn / TensorFlow (spawned from Node) |
+
+## Team
+
+| Name | Role |
+| --- | --- |
+| Aakash | Full Stack Developer |
+| Hariom | Machine Learning Developer |
+| Amit | Backend Developer |
+| Tushar | Frontend Developer |
 
 ## Machine Learning Models
 
-- **Heart Disease Prediction:**
-  - Algorithm: Logistic Regression.
-  - Input Features:
-    - Age, Sex, Chest Pain Type, Resting Blood Pressure, Serum Cholesterol, Fasting Blood Sugar, ECG Results, Max Heart Rate, Exercise Induced Angina, ST Depression, Peak ST Slope, Number of Vessels, Thalassemia.
+- **Heart** — Age, Sex, Chest Pain Type, Resting BP, Cholesterol, Fasting BS, ECG, Max HR, Exercise Angina, ST Depression, Peak ST Slope, Vessels, Thalassemia
+- **Diabetes** — Pregnancies, Glucose, Blood Pressure, Skin Thickness, Insulin, BMI, Diabetes Pedigree Function, Age
+- **Breast cancer** — Breast tissue image → CNN
+- **Lung cancer** — Lung X-ray / CT → InceptionResNet (`LCD.h5`, ~209MB, stored with **Git LFS**)
 
-- **Diabetes Prediction:**
-  - Algorithm: Support Vector Machine (SVM).
-  - Input Features:
-    - Pregnancies, Glucose, Blood Pressure, Skin Thickness, Insulin, BMI, Diabetes Pedigree Function, Age.
+## Getting Started
 
-- **Breast Cancer Prediction:**
-  - Algorithm: Convolutional Neural Network (CNN).
-  - Input: Breast tissue image.
+### Prerequisites
 
-- **Lung Cancer Prediction:**
-  - Algorithm: InceptionResNet.
-  - Input: Lung X-ray or CT scan image.
+- Node.js 18+
+- Python 3 with TensorFlow (for lung / breast models)
+- MongoDB Atlas URI (or local MongoDB)
+- Git LFS (to pull `LCD.h5`)
+
+```bash
+git lfs install
+git clone https://github.com/amitpal1554/LifelinkAI.git
+cd LifelinkAI
+git lfs pull
+```
+
+### Backend
+
+```bash
+cd Backend
+cp env.txt .env   # then fill MONGODB_URI, JWT secrets, etc.
+npm install
+npm run server
+```
+
+### Frontend
+
+```bash
+cd Frontend
+npm install
+npm run dev
+```
+
+Or from `Backend/`:
+
+```bash
+npm run dev   # runs API + Vite together via concurrently
+```
+
+Frontend proxies `/api` to the backend (see `Frontend/vite.config.js`).
 
 ## Usage
 
-1. **Sign up** or **Log in** to access the predictors.
-2. Navigate to the respective disease predictor (Heart, Diabetes, Breast, Lung).
-3. **For heart disease and diabetes:** Fill in the form manually or upload a prescription, and the system will auto-populate the fields using regex.
-4. **For breast and lung cancer:** Upload an image (X-ray or CT scan).
-5. Submit the form and view the prediction result.
-6. Download the custom PDF report for future reference.
+1. Sign up or log in
+2. Open a predictor (Heart / Diabetes / Breast / Lung)
+3. Heart & Diabetes — fill the form or upload a prescription
+4. Breast & Lung — upload a medical image
+5. Submit → view result → download PDF report if needed
 
-## Frontend Design
+## Project Structure
 
-The frontend design has been created using [Figma](https://www.figma.com/design/psQyNMetXUsjCcvmvvjqIg/PredictiX---Final-Year-Project?node-id=0-1&t=KuA0zys1uwoHgMxW-1). It outlines the structure and user flow of the application, ensuring a seamless user experience.
-
-## File Structure
-
-```bash
-PredictiX/
-├── Backend/                # Backend code
-│   ├── src/                # Source code
-│   │   ├── controllers/    # Controller files
-│   │   ├── DataScrapingScripts/ # Scripts for data scraping
-│   │   ├── db/             # Database configuration
-│   │   ├── middlewares/     # Middleware functions
-│   │   ├── models/         # Database models
-│   │   ├── routes/         # API route definitions
-│   │   ├── utils/          # Utility functions
-│   │   ├── app.js          # Main application file
-│   │   ├── constants.js     # Constant values
-│   │   └── index.js        # Entry point for the application
-│   └── uploads/            # Uploaded files (prescriptions, etc.)
-├── Frontend/               # Frontend code
-│   ├── public/             # Public assets
-│   │   └── PredictiXLogo.png # Logo file
-│   └── src/                # Source code
-│       ├── assets/         # Static assets
-│       ├── components/     # React components
-│       ├── context/        # Context API files
-│       ├── pages/          # Page components
-│       ├── ReportTemplate/  # Template for reports
-│       ├── utils/          # Utility functions
-│       ├── App.css         # Main CSS file
-│       ├── App.jsx         # Main React component
-│       └── main.jsx        # Entry point for the frontend
-├── Medical Reports/        # Generated medical reports
-├── ML/                     # Machine learning models and scripts
-├── Screenshots/            # Application screenshots
-├── LICENSE                 # License file
-└── README.md               # README file
-
+```text
+LifelinkAI/
+├── Backend/                 # Express API + ML spawn scripts
+│   ├── controllers/
+│   ├── ML/                  # Models used by the server (incl. LCD.h5 via LFS)
+│   ├── models/
+│   ├── routes/
+│   ├── middlewares/
+│   └── index.js
+├── Frontend/                # React + Vite UI (LifelinkAI branding)
+├── ML/                      # Shared / reference ML scripts & weights
+├── Screenshots/             # App screenshots
+├── LICENSE
+└── README.md
 ```
 
 ## Screenshots
 
 ### Homepage
-![Homepage](https://raw.githubusercontent.com/hallowshaw/PredictiX/main/Screenshots/SS1.png)
+![Homepage](Screenshots/SS1.png)
 
-### Sign Up Page
-![Sign Up](https://raw.githubusercontent.com/hallowshaw/PredictiX/main/Screenshots/SS2.png)
+### Sign Up
+![Sign Up](Screenshots/SS2.png)
 
-### Predictors Page
-![Predictors](https://raw.githubusercontent.com/hallowshaw/PredictiX/main/Screenshots/SS3.png)
+### Predictors
+![Predictors](Screenshots/SS3.png)
 
-### About Page
-![About](https://raw.githubusercontent.com/hallowshaw/PredictiX/main/Screenshots/SS4.png)
+### About
+![About](Screenshots/SS4.png)
 
+## Notes
 
-## Future Enhancements
-
-- **OCR Integration:** Plan to replace regex with Optical Character Recognition (OCR) for extracting prescription data more efficiently.
-- **Mobile Application:** Expand PredictiX into a cross-platform mobile app using React Native.
-- **Additional Predictors:** Add more disease predictors to extend the functionality.
-- **Enhanced Image Processing:** Use more advanced techniques for image analysis, improving accuracy for cancer detection.
-- **Integration with Wearables:** Sync health data from wearables for real-time predictions.
+- **Secrets** — Never commit `.env`. Use `Backend/env.txt` as a template.
+- **Large files** — `LCD.h5` is tracked with Git LFS. Clone with LFS enabled or lung prediction will fail.
+- **Medical Reports/** — Large training image datasets are not included in the repo.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
