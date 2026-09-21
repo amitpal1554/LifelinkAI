@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+Frontend/node_modules/
+Backend/node_modules/
+
+# Env / secrets
+.env
+.env.*
+Backend/.env
+Backend/env
+Frontend/.env
+
+# Local / runtime
+.local-mongo/
+*.log
+.DS_Store
+uploads/
+Backend/uploads/*
+!Backend/uploads/.gitkeep
+
+# Build
+Frontend/dist/
+Backend/dist/
+
+# Large ML weights (GitHub 100MB limit) — download separately if needed
+Backend/ML/Lung Cancer Prediction/LCD.h5
+ML/Lung Cancer Prediction/LCD.h5
+**/mongodb.tgz
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Dataset images (too large for GitHub)
+Medical Reports/
