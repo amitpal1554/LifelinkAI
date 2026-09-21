@@ -307,34 +307,47 @@ def replace_snapshot_images(doc: fitz.Document):
 
 
 def soft_text_updates(doc: fitz.Document):
-    """Update visible PredictiX captions on snapshot pages where possible."""
+    """Replace PredictiX branding: white-out word, then draw LifelinkAI in-place."""
     replacements = [
-        ("Predictix", "LifelinkAI"),
+        ("PREDICTIX", "LifelinkAI"),
         ("PredictiX", "LifelinkAI"),
-        ("PREDICTIX", "LIFELINKAI"),
+        ("Predictix", "LifelinkAI"),
+        ("predictix", "LifelinkAI"),
     ]
-    # Focus on snapshot / abstract / conclusion pages
-    for i in list(range(3, 6)) + list(range(33, 47)):
-        if i >= len(doc):
-            continue
+    for i in range(3, len(doc)):
         page = doc[i]
+        hits = []
         for old, new in replacements:
-            hits = page.search_for(old)
-            for rect in hits:
-                # white-out then rewrite
-                page.add_redact_annot(rect, fill=(1, 1, 1))
-            if hits:
-                page.apply_redactions()
-                for rect in hits:
-                    # slightly enlarge for longer name
-                    page.insert_textbox(
-                        rect + (0, -1, 40, 2),
-                        new,
-                        fontname="times-roman",
-                        fontsize=9,
-                        color=(0, 0, 0),
-                        align=1,
-                    )
+            for rect in page.search_for(old):
+                hits.append((fitz.Rect(rect), old, new))
+        if not hits:
+            continue
+        hits.sort(key=lambda h: (h[0].y0, h[0].x0, -len(h[1])))
+        used = []
+        clean = []
+        for rect, old, new in hits:
+            if any(rect.intersects(u) for u in used):
+                continue
+            used.append(rect)
+            clean.append((rect, old, new))
+            page.add_redact_annot(rect, fill=(1, 1, 1))
+        page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
+
+        for rect, old, new in clean:
+            fontsize = min(rect.height * 0.88, 11)
+            # Cover original word + a little extra for the longer name (into trailing space)
+            cover = fitz.Rect(rect.x0 - 0.3, rect.y0 - 0.6, rect.x1 + fontsize * 0.55, rect.y1 + 0.6)
+            page.draw_rect(cover, color=(1, 1, 1), fill=(1, 1, 1), width=0)
+            baseline = fitz.Point(rect.x0, rect.y1 - rect.height * 0.18)
+            page.insert_text(
+                baseline,
+                new,
+                fontsize=fontsize,
+                fontname="times-roman",
+                color=(0, 0, 0),
+                overlay=True,
+            )
+        print(f"Page {i + 1}: replaced {len(clean)} PredictiX occurrence(s)")
 
 
 def main():
@@ -342,10 +355,10 @@ def main():
     build_front_pages(TMP)
     print("Built front pages:", TMP)
 
+    # Always rebuild from the original clean PDF
     front = fitz.open(TMP)
     doc = fitz.open(SRC)
 
-    # Replace first 3 pages
     doc.delete_pages(0, 2)
     doc.insert_pdf(front, start_at=0)
     front.close()
@@ -353,8 +366,9 @@ def main():
     replace_snapshot_images(doc)
     soft_text_updates(doc)
 
-    doc.save(OUT, garbage=4, deflate=True)
-    doc.save(OUT_ALT, garbage=4, deflate=True)
+    # Save clean copies
+    doc.save(OUT, garbage=4, deflate=True, clean=True)
+    doc.save(OUT_ALT, garbage=4, deflate=True, clean=True)
     doc.close()
     print("Saved:", OUT)
     print("Saved:", OUT_ALT)
